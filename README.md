@@ -2,7 +2,7 @@
 
 How to run:
 
-*docker run -v /yourdatadir:/data --rm -it cogent
+*docker run -v /yourdatadir:/data --rm -it cogent*
 
 add your command to /opt/start , for example:
 
