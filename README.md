@@ -17,7 +17,9 @@ run:
 first run:
 
 *> source /anaconda3/bin/activate anaCogent*
+
 *> export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/Cogent/Complete-Striped-Smith-Waterman-Library/src*
+
 *> export PYTHONPATH=$PYTHONPATH:/Cogent/Complete-Striped-Smith-Waterman-Library/src*
 
 and then run your own commands.
