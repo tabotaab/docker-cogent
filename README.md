@@ -6,8 +6,8 @@ How to run:
 
 add your command to /opt/start , for example:
 
-*echo -e "run_mash.py --version" >> /opt/start 
+*echo -e "run_mash.py --version" >> /opt/start*
 
 run:
 
-*/opt/start
+*/opt/start*
