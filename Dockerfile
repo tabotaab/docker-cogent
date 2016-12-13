@@ -19,6 +19,7 @@ RUN apt-get install -y -q vim samtools
 RUN wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2015-12-31.v6.tar.gz
 RUN tar zxvf gmap-gsnap-2015-12-31.v6.tar.gz
 RUN cd /gmap-2015-12-31 && ./configure --prefix=$HOME && make && make install
+ENV PATH=$HOME/bin:$PATH
 
 ###############################
 # MASH
