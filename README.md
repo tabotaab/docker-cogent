@@ -23,3 +23,6 @@ first run:
 *> export PYTHONPATH=$PYTHONPATH:/Cogent/Complete-Striped-Smith-Waterman-Library/src*
 
 and then run your own commands.
+
+# Docker repository:
+https://hub.docker.com/r/tabotaab/docker-cogent
