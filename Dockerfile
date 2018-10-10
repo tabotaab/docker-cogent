@@ -72,10 +72,6 @@ RUN echo -e "export PYTHONPATH=$PYTHONPATH:/Cogent/Complete-Striped-Smith-Waterm
 RUN echo -e "run_mash.py --version" >> $STARTSCRIPT
 RUN chmod +x $STARTSCRIPT
 
-## test with run_mash.py --version
-
-
-
 ###############################
 ## How to run
 # docker run -v /yourdatadir:/data --rm -it cogent
