@@ -1,10 +1,12 @@
 # Set the base image to Ubuntu
 FROM ubuntu:14.04
+MAINTAINER Sara Movahedi s.movahedi@rijkzwaan.nl
 
+# Update the repository sources list
+#RUN apt-add-repository multiverse
 RUN apt-get update
 RUN apt-get install -y -q software-properties-common
 
-###############################
 # Install compiler and perl stuff
 RUN apt-get install -y -q libboost-iostreams-dev libboost-system-dev libboost-filesystem-dev
 RUN apt-get install -y -q zlibc gcc-multilib apt-utils zlib1g-dev python python-pip
@@ -14,19 +16,24 @@ RUN apt-get update
 RUN apt-get -y upgrade
 RUN apt-get install -y -q vim samtools
 
-###############################
 # GMAP
-RUN wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2015-12-31.v6.tar.gz
-RUN tar zxvf gmap-gsnap-2015-12-31.v6.tar.gz
-RUN cd /gmap-2015-12-31 && ./configure && make && make install
+RUN wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-07-04.tar.gz
+RUN tar zxvf gmap-gsnap-2018-07-04.tar.gz
+RUN cd /gmap-2018-07-04 && ./configure && make && make install
 
-###############################
 # MASH
-RUN wget https://github.com/marbl/Mash/releases/download/v1.0.2/mash-Linux64-v1.0.2.tar.gz && \
-	tar zxvf mash-Linux64-v1.0.2.tar.gz 
-RUN mv mash /usr/bin/
+RUN wget https://github.com/marbl/Mash/releases/download/v2.1/mash-Linux64-v2.1.tar
+RUN tar -xvf mash-Linux64-v2.1.tar 
+RUN cp /mash-Linux64-v2.1/mash /usr/bin/
+
+# Minimap2
+RUN git clone https://github.com/lh3/minimap2
+RUN cd /minimap2 && make
+RUN chmod 755 /minimap2/minimap2.1
+ENV PATH=/minimap2:$PATH 
 
 ###############################
+## A little Docker magic here
 
 # Force bash always
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
@@ -39,11 +46,12 @@ ENV CONDA_ACTIVATE "source $CONDA_ENV_PATH/bin/activate $MY_CONDA_COGENTENV"
 ###############################
 # COGENT
 WORKDIR /
-RUN wget https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh
-RUN bash Anaconda3-4.2.0-Linux-x86_64.sh -b -p $CONDA_ENV_PATH && chmod -R a+rx $CONDA_ENV_PATH
+RUN wget https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh
+RUN bash Anaconda3-5.1.0-Linux-x86_64.sh -b -p $CONDA_ENV_PATH && chmod -R a+rx $CONDA_ENV_PATH
 ENV PATH=$CONDA_ENV_PATH/bin:$PATH 
 RUN conda create -y -n $MY_CONDA_COGENTENV python=2.7 anaconda 
 RUN conda update --quiet --yes conda
+#RUN source activate anaCogent &
 RUN conda install -y -n $MY_CONDA_COGENTENV biopython && \
     conda install -y -n $MY_CONDA_COGENTENV -c http://conda.anaconda.org/cgat bx-python 
 RUN conda clean -y -t
@@ -63,6 +71,10 @@ RUN echo -e "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/Cogent/Complete-Striped-Sm
 RUN echo -e "export PYTHONPATH=$PYTHONPATH:/Cogent/Complete-Striped-Smith-Waterman-Library/src" >> $STARTSCRIPT
 RUN echo -e "run_mash.py --version" >> $STARTSCRIPT
 RUN chmod +x $STARTSCRIPT
+
+## test with run_mash.py --version
+
+
 
 ###############################
 ## How to run
