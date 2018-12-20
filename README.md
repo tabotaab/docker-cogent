@@ -25,4 +25,4 @@ first run:
 and then run your own commands.
 
 # Docker repository:
-https://hub.docker.com/r/tabotaab/docker-cogent-cupcake
+https://hub.docker.com/r/tabotaab/cogent-cupcake
