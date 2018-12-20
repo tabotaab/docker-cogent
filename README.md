@@ -1,4 +1,4 @@
-# How to run docker-cogent
+# How to run docker-cogent-cupcake
 
 # First option :
 *> docker run -v /yourdatadir:/data --rm -it cogent*
@@ -25,4 +25,4 @@ first run:
 and then run your own commands.
 
 # Docker repository:
-https://hub.docker.com/r/tabotaab/docker-cogent
+https://hub.docker.com/r/tabotaab/docker-cogent-cupcake
