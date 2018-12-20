@@ -57,7 +57,7 @@ ENV MY_CONDA_COGENTENV "anaCogent"
 ENV CONDA_ACTIVATE "source $CONDA_ENV_PATH/bin/activate $MY_CONDA_COGENTENV"
 
 ###############################
-# COGENT
+# Anaconda
 WORKDIR /
 RUN wget https://repo.continuum.io/archive/Anaconda3-5.3.1-Linux-x86_64.sh
 RUN bash Anaconda3-5.3.1-Linux-x86_64.sh -b -p $CONDA_ENV_PATH && chmod -R a+rx $CONDA_ENV_PATH
@@ -68,13 +68,36 @@ RUN conda update --quiet --yes conda
 RUN conda install -y -n $MY_CONDA_COGENTENV biopython && \
     conda install -y -n $MY_CONDA_COGENTENV -c http://conda.anaconda.org/cgat bx-python 
 RUN conda install -y -n $MY_CONDA_COGENTENV -c conda-forge pulp
+
+RUN conda config --add channels defaults
+RUN conda config --add channels bioconda
+RUN conda config --add channels conda-forge
+RUN conda install -y -n $MY_CONDA_COGENTENV -c bioconda pbcore
+RUN conda install -y -n $MY_CONDA_COGENTENV -c bioconda isoseq3
+RUN apt-get -y install libgl1-mesa-glx
+
 RUN conda clean -y -t
 #RUN $CONDA_ACTIVATE && pip install --upgrade pip && pip install pulp
+
+###############################
+# COGENT
 RUN git clone https://github.com/Magdoll/Cogent.git 
 RUN $CONDA_ACTIVATE && cd /Cogent && git checkout tags/v3.5 && git submodule update --init --recursive && cd  Complete-Striped-Smith-Waterman-Library/src && make && \
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/Cogent/Complete-Striped-Smith-Waterman-Library/src && \
     export PYTHONPATH=$PYTHONPATH:/Cogent/Complete-Striped-Smith-Waterman-Library/src && \
     $CONDA_ACTIVATE && cd /Cogent && python setup.py build && python setup.py install && cd / 
+
+###############################
+# CUPCAKE/cDNA_Cupcake/
+WORKDIR /
+RUN git clone https://github.com/Magdoll/cDNA_Cupcake.git
+RUN $CONDA_ACTIVATE && cd /cDNA_Cupcake && git checkout -b tofu2 tofu2_v21 && python setup.py build && python setup.py install && cd /
+#RUN $CONDA_ACTIVATE && cd /cDNA_Cupcake && python setup.py build && python setup.py install && cd /
+ENV PATH=/cDNA_Cupcake/cupcake2/tofu2:/cDNA_Cupcake/cupcake2/ice2:/cDNA_Cupcake/sequence/:/cDNA_Cupcake/annotation/:/cDNA_Cupcake/post_isoseq_cluster/:/cDNA_Cupcake/SequelQC:$CONDA_ENV_PATH/envs/anaCogent/bin:$PATH 
+
+Run chmod 755 /cDNA_Cupcake -R
+Run chmod 755 /Cogent -R
+Run chmod 755 /anaconda3 -R
 
 ###############################
 # Script: Activate virtualenv and launch cogent
@@ -88,25 +111,11 @@ RUN chmod +x $STARTSCRIPT
 
 ###############################
 ## How to run
-# docker run -v /yourdatadir:/data --rm -it cogent
+# docker run -v /yourdatadir:/data --rm -it cogent-cupcake
 ## add your command to /opt/start , for example:
 # echo -e "run_mash.py --version" >> /opt/start 
 ## run
 # /opt/start
 
-###############################
-# CUPCAKE/cDNA_Cupcake/
-WORKDIR /
-RUN git clone https://github.com/Magdoll/cDNA_Cupcake.git
-#RUN $CONDA_ACTIVATE && cd /cDNA_Cupcake && git checkout -b tofu2 tofu2_v21 && python setup.py build && python setup.py install && cd /
-RUN $CONDA_ACTIVATE && cd /cDNA_Cupcake && python setup.py build && python setup.py install && cd /
-ENV PATH=$CONDA_ENV_PATH/envs/anaCogent/bin:/cDNA_Cupcake/sequence/:/cDNA_Cupcake/annotation/:/cDNA_Cupcake/post_isoseq_cluster/:/cDNA_Cupcake/SequelQC:$PATH 
-
-RUN conda config --add channels defaults
-RUN conda config --add channels bioconda
-RUN conda config --add channels conda-forge
-RUN conda install -y -n $MY_CONDA_COGENTENV -c bioconda pbcore
-RUN conda install -y -n $MY_CONDA_COGENTENV -c bioconda isoseq3
-RUN apt-get -y install libgl1-mesa-glx
 ### run commands in /opt/start first
 
