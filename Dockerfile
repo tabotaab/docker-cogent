@@ -1,5 +1,5 @@
 # Set the base image to Ubuntu
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 MAINTAINER Sara Movahedi s.movahedi@rijkzwaan.nl
 
 # Update the repository sources list
@@ -15,6 +15,19 @@ RUN apt-get install -y -q cmake tcsh build-essential g++ git wget gzip perl unzi
 RUN apt-get update
 RUN apt-get -y upgrade
 RUN apt-get install -y -q vim samtools
+
+# Python Prerequisites
+RUN apt-get install -y -q python 
+RUN apt-get install -y -q python-pip
+RUN pip install --upgrade pip
+RUN pip install biopython
+RUN pip install numpy
+RUN pip install scipy
+RUN pip install scikit-learn scikit-image
+RUN pip install matplotlib
+RUN pip install bx-python
+RUN pip install pulp
+
 
 # GMAP
 RUN wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2018-07-04.tar.gz
@@ -46,18 +59,19 @@ ENV CONDA_ACTIVATE "source $CONDA_ENV_PATH/bin/activate $MY_CONDA_COGENTENV"
 ###############################
 # COGENT
 WORKDIR /
-RUN wget https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh
-RUN bash Anaconda3-5.1.0-Linux-x86_64.sh -b -p $CONDA_ENV_PATH && chmod -R a+rx $CONDA_ENV_PATH
+RUN wget https://repo.continuum.io/archive/Anaconda3-5.3.1-Linux-x86_64.sh
+RUN bash Anaconda3-5.3.1-Linux-x86_64.sh -b -p $CONDA_ENV_PATH && chmod -R a+rx $CONDA_ENV_PATH
 ENV PATH=$CONDA_ENV_PATH/bin:$PATH 
 RUN conda create -y -n $MY_CONDA_COGENTENV python=2.7 anaconda 
 RUN conda update --quiet --yes conda
 #RUN source activate anaCogent &
 RUN conda install -y -n $MY_CONDA_COGENTENV biopython && \
     conda install -y -n $MY_CONDA_COGENTENV -c http://conda.anaconda.org/cgat bx-python 
+RUN conda install -y -n $MY_CONDA_COGENTENV -c conda-forge pulp
 RUN conda clean -y -t
-RUN $CONDA_ACTIVATE && pip install --upgrade pip && pip install pulp
+#RUN $CONDA_ACTIVATE && pip install --upgrade pip && pip install pulp
 RUN git clone https://github.com/Magdoll/Cogent.git 
-RUN $CONDA_ACTIVATE && cd /Cogent && git submodule update --init --recursive && cd  Complete-Striped-Smith-Waterman-Library/src && make && \
+RUN $CONDA_ACTIVATE && cd /Cogent && git checkout tags/v3.5 && git submodule update --init --recursive && cd  Complete-Striped-Smith-Waterman-Library/src && make && \
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/Cogent/Complete-Striped-Smith-Waterman-Library/src && \
     export PYTHONPATH=$PYTHONPATH:/Cogent/Complete-Striped-Smith-Waterman-Library/src && \
     $CONDA_ACTIVATE && cd /Cogent && python setup.py build && python setup.py install && cd / 
@@ -80,4 +94,16 @@ RUN chmod +x $STARTSCRIPT
 ## run
 # /opt/start
 
+###############################
+# CUPCAKE/cDNA_Cupcake/
+WORKDIR /
+RUN git clone https://github.com/Magdoll/cDNA_Cupcake.git
+#RUN $CONDA_ACTIVATE && cd /cDNA_Cupcake && git checkout -b tofu2 tofu2_v21 && python setup.py build && python setup.py install && cd /
+RUN $CONDA_ACTIVATE && cd /cDNA_Cupcake && python setup.py build && python setup.py install && cd /
+ENV PATH=$CONDA_ENV_PATH/envs/anaCogent/bin:/cDNA_Cupcake/sequence/:/cDNA_Cupcake/annotation/:/cDNA_Cupcake/post_isoseq_cluster/:/cDNA_Cupcake/SequelQC:$PATH 
+
+RUN git clone https://github.com/PacificBiosciences/pbcore.git
+RUN cd /pbcore && pip install -r requirements.txt && python setup.py install && cd /
+RUN apt-get -y install libgl1-mesa-glx
+### run commands in /opt/start first
 
