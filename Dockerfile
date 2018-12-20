@@ -61,7 +61,7 @@ ENV CONDA_ACTIVATE "source $CONDA_ENV_PATH/bin/activate $MY_CONDA_COGENTENV"
 WORKDIR /
 RUN wget https://repo.continuum.io/archive/Anaconda3-5.3.1-Linux-x86_64.sh
 RUN bash Anaconda3-5.3.1-Linux-x86_64.sh -b -p $CONDA_ENV_PATH && chmod -R a+rx $CONDA_ENV_PATH
-ENV PATH=$CONDA_ENV_PATH/bin:$PATH 
+ENV PATH=$PATH:$CONDA_ENV_PATH/bin
 RUN conda create -y -n $MY_CONDA_COGENTENV python=2.7 anaconda 
 RUN conda update --quiet --yes conda
 #RUN source activate anaCogent &
@@ -97,7 +97,7 @@ ENV PATH=/cDNA_Cupcake/cupcake2/tofu2:/cDNA_Cupcake/cupcake2/ice2:/cDNA_Cupcake/
 
 Run chmod 755 /cDNA_Cupcake -R
 Run chmod 755 /Cogent -R
-Run chmod 755 /anaconda3 -R
+#Run chmod 755 /anaconda3 -R
 
 ###############################
 # Script: Activate virtualenv and launch cogent
