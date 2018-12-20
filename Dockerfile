@@ -102,8 +102,11 @@ RUN git clone https://github.com/Magdoll/cDNA_Cupcake.git
 RUN $CONDA_ACTIVATE && cd /cDNA_Cupcake && python setup.py build && python setup.py install && cd /
 ENV PATH=$CONDA_ENV_PATH/envs/anaCogent/bin:/cDNA_Cupcake/sequence/:/cDNA_Cupcake/annotation/:/cDNA_Cupcake/post_isoseq_cluster/:/cDNA_Cupcake/SequelQC:$PATH 
 
-RUN git clone https://github.com/PacificBiosciences/pbcore.git
-RUN cd /pbcore && pip install -r requirements.txt && python setup.py install && cd /
+RUN conda config --add channels defaults
+RUN conda config --add channels bioconda
+RUN conda config --add channels conda-forge
+RUN conda install -y -n $MY_CONDA_COGENTENV -c bioconda pbcore
+RUN conda install -y -n $MY_CONDA_COGENTENV -c bioconda isoseq3
 RUN apt-get -y install libgl1-mesa-glx
 ### run commands in /opt/start first
 
