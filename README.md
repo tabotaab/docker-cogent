@@ -1,7 +1,7 @@
 # How to run docker-cogent-cupcake
 
 # First option :
-*> docker run -v /yourdatadir:/data --rm -it cogent*
+*> docker run -v /yourdatadir:/data --rm -it cogent-cupcake*
 
 add your command to /opt/start , for example:
 
@@ -12,7 +12,7 @@ run:
 *> /opt/start*
 
 # Second option:
-*> docker run -v /yourdatadir:/data --rm -it cogent*
+*> docker run -v /yourdatadir:/data --rm -it cogent-cupcake*
 
 first run:
 
